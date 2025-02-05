@@ -16,7 +16,7 @@ class chatbot:
         llm_service: An instance of the LLM service for chat completion and embedding retrieval.
         chat_model: The name of the chat model used for generating responses.
         embedding_model: The name of the embedding model used for vector representation.
-        database: A Pandas DataFrame containing the document's text and corresponding embeddings.
+        document: The filename of the pdf document.
     """
 
     def __init__(self,llm_service,chat_model,embedding_model,document)->None:
@@ -28,7 +28,8 @@ class chatbot:
             llm_service: The LLM service used for chat completions and embedding model.
             chat_model: The name of the chat model.
             embedding_model: The name of the embedding model.
-            document: The filename of the document (without .pdf extension).
+            document: The filename of the pdf document.
+            database: A Pandas DataFrame containing the document's text and corresponding embeddings
         """
 
         self.llm_service = llm_service
