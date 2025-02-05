@@ -35,7 +35,7 @@ class Create_DataBase:
         self.embedding_model = embedding_model
     
 
-    def parse_pdf(self,verbose=True)-> List:
+    def parse_pdf(self,verbose:bool=True)-> List:
 
         """
         Extracts text from a PDF file and maps it to corresponding page numbers.
@@ -49,6 +49,7 @@ class Create_DataBase:
         page_map = []
         path = './data/'
         if verbose: print(f"Extracting text using PyPDF")
+
         reader = PdfReader(path + self.document)
         pages = reader.pages
         for page_num, p in enumerate(pages):

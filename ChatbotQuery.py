@@ -19,7 +19,7 @@ class chatbot:
         database: A Pandas DataFrame containing the document's text and corresponding embeddings.
     """
 
-    def __init__(self,llm_service,chat_model,embedding_model,document):
+    def __init__(self,llm_service,chat_model,embedding_model,document)->None:
 
         """
         Initializes the chatbot with the given models and loads the document database.
@@ -37,7 +37,7 @@ class chatbot:
         document = document.replace(".pdf","")
         self.database = pd.read_csv(f"{document}.csv")
 
-    def rephrase_question(self,user_question,chat_history):
+    def rephrase_question(self,user_question:str,chat_history:List)->str:
         
         """
         Rephrases the user's question using the LLM service.
@@ -78,7 +78,7 @@ class chatbot:
         text = [float(i) for i in text]
         return text
     
-    def cosine_similarity(self,a:List,b:List):
+    def cosine_similarity(self,a:List,b:List)->float:
 
         """
         Computes the cosine similarity between two vectors.
@@ -94,7 +94,7 @@ class chatbot:
         cosine = np.dot(a,b)/(norm(a)*norm(b))
         return cosine
     
-    def retrieve_context(self,rephrase_question):
+    def retrieve_context(self,rephrase_question:str)->str:
 
         """
         Retrieves the most relevant context from the database based on the rephrased question.
@@ -118,7 +118,7 @@ class chatbot:
 
         return context
     
-    def query_answering(self,query):
+    def query_answering(self,query:str)->str:
 
         """
         Processes a user query by rephrasing it, retrieving relevant context, and generating an answer.
