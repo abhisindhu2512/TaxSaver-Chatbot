@@ -8,7 +8,28 @@ import re
 
 class chatbot:
 
+    """
+    A chatbot class that interacts with an LLM service for question-answering. 
+    It retrieves relevant context from an embedded document database and generates responses.
+    
+    Attributes:
+        llm_service: An instance of the LLM service for chat completion and embedding retrieval.
+        chat_model: The name of the chat model used for generating responses.
+        embedding_model: The name of the embedding model used for vector representation.
+        database: A Pandas DataFrame containing the document's text and corresponding embeddings.
+    """
+
     def __init__(self,llm_service,chat_model,embedding_model,document):
+
+        """
+        Initializes the chatbot with the given models and loads the document database.
+
+        Args:
+            llm_service: The LLM service used for chat completions and embedding model.
+            chat_model: The name of the chat model.
+            embedding_model: The name of the embedding model.
+            document: The filename of the document (without .pdf extension).
+        """
 
         self.llm_service = llm_service
         self.chat_model = chat_model
@@ -17,6 +38,17 @@ class chatbot:
         self.database = pd.read_csv(f"{document}.csv")
 
     def rephrase_question(self,user_question,chat_history):
+        
+        """
+        Rephrases the user's question using the LLM service.
+
+        Args:
+            user_question: The original question from the user.
+            chat_history: A list containing previous chat interactions.
+
+        Returns:
+            A rephrased version of the user's question.
+        """
 
         system_prompt = f'''
         Actual Task Input:
@@ -30,16 +62,49 @@ class chatbot:
         return rephrase_question
     
     def string_to_list(self,text:str)-> List:
+        
+        """
+        Converts a string representation of a list into an actual list of floats.
+
+        Args:
+            text: A string containing a list of numbers.
+
+        Returns:
+            A list of floating-point numbers.
+        """
+
         text = re.sub(r"[\[\]]", "", text)
         text = text.split(',')
         text = [float(i) for i in text]
         return text
     
     def cosine_similarity(self,a:List,b:List):
+
+        """
+        Computes the cosine similarity between two vectors.
+
+        Args:
+            a: The first vector.
+            b: The second vector.
+
+        Returns:
+            The cosine similarity score between the two vectors.
+        """
+
         cosine = np.dot(a,b)/(norm(a)*norm(b))
         return cosine
     
     def retrieve_context(self,rephrase_question):
+
+        """
+        Retrieves the most relevant context from the database based on the rephrased question.
+
+        Args:
+            rephrase_question: The rephrased user question.
+
+        Returns:
+            A string containing the top matching context from the document.
+        """
        
         self.database['ContentVector'] = self.database['ContentVector'].astype('str')
         self.database['ContentVector'] = self.database['ContentVector'].apply(lambda x:self.string_to_list(x))
@@ -55,11 +120,21 @@ class chatbot:
     
     def query_answering(self,query):
 
+        """
+        Processes a user query by rephrasing it, retrieving relevant context, and generating an answer.
+
+        Args:
+            query: The user's original question.
+
+        Returns:
+            The generated answer based on the retrieved context.
+        """
+
         try:
             with open('chat_history.json', 'r') as file:
                 chat_history  = json.load(file)
 
-        except:
+        except FileNotFoundError:
             chat_history = []
 
         rephrased_question = self.rephrase_question(user_question = query,chat_history = chat_history)

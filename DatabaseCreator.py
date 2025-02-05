@@ -6,7 +6,29 @@ import re
 
 class Create_DataBase:
 
+
+    """
+    A class to process and convert a PDF document into a structured database.
+
+    This class extracts text from a PDF, normalizes it, generates embeddings, and 
+    stores the processed data in a CSV file.
+
+    Attributes:
+        llm_service: An instance of the LLM service used to generate embeddings.
+        embedding_model: The name of the embedding model to be used.
+        document: The filename of the PDF document to be processed.
+    """
+
     def __init__(self,llm_service:str,embedding_model:str,document:str)-> None:
+
+        """
+        Initializes the Create_DataBase class with the provided LLM service, embedding model, and document.
+
+        Args:
+            llm_service (str): The LLM service used for generating text embeddings.
+            embedding_model (str): The name of the embedding model.
+            document (str): The filename of the PDF document to be processed.
+        """
         
         self.llm_service = llm_service
         self.document = document
@@ -14,6 +36,16 @@ class Create_DataBase:
     
 
     def parse_pdf(self,verbose=True)-> List:
+
+        """
+        Extracts text from a PDF file and maps it to corresponding page numbers.
+
+        Args:
+            verbose (bool, optional): If True, prints progress messages. Defaults to True.
+
+        Returns:
+            List: A list of tuples where each tuple contains a page number and its extracted text.
+        """
         page_map = []
         path = './data/'
         if verbose: print(f"Extracting text using PyPDF")
@@ -26,6 +58,17 @@ class Create_DataBase:
         return page_map
     
     def normalize_text(self,text:str, sep_token = " \n ")-> str:
+
+        """
+        Cleans and normalizes extracted text by removing unnecessary spaces, line breaks, and formatting inconsistencies.
+
+        Args:
+            text (str): The raw extracted text from the PDF.
+            sep_token (str, optional): The separator token to handle line breaks. Defaults to " \n ".
+
+        Returns:
+            str: The cleaned and normalized text.
+        """
         text = re.sub(r'\s+',  ' ', text).strip()
         text = re.sub(r". ,","",text)
         # remove all instances of multiple spaces
@@ -37,6 +80,13 @@ class Create_DataBase:
         return text
     
     def transform_pdf_to_dataframe(self):
+
+        """
+        Processes the PDF by extracting text, normalizing it, generating embeddings, and 
+        saving the structured data into a CSV file.
+
+        The CSV file includes metadata, page content, and its corresponding embedding vector.
+        """
         df = pd.DataFrame()
         for page in self.parse_pdf():
             doc_info = self.document + str(page[0])
